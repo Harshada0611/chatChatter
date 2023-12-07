@@ -51,7 +51,7 @@ const UserSearch = ({
               return (
                 <div
                   key={user._id}
-                  className="border-[1px] bg-white rounded-md  flex items-center gap-2 py-1 px-1"
+                  className="border-[1px] bg-white rounded-md  flex items-center gap-2 py-1 px-1 hover:bg-green-100 cursor-pointer"
                 >
                   {user.profilePic && (
                     <img src={user.profilePic} className="w-8 h-8" />

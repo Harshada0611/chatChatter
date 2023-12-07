@@ -12,6 +12,8 @@ app.use(cors());
 
 //! routes
 app.use(require("./route/user"));
+app.use(require("./route/chat"));
+app.use(require("./route/message"));
 
 app.get("/", async (req, resp) => {
   resp.send("Application initiated successfully");

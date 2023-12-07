@@ -1,16 +1,23 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+// api calls
+import { GetAllChats } from "../api-calls/chat";
 // icons and images
 import chaticon from "../assets/chat-icon.png";
 import { ImSwitch } from "react-icons/im";
 // components
 import UserSearch from "./chat-components/UserSearch";
-import UserList from "./chat-components/UserList";
+import ChatList from "./chat-components/ChatList";
 import ChatBox from "./chat-components/ChatBox";
+// redux actions
+import { SetAllChats } from "../redux/slices/userSLice";
 
 const ChatContainer = () => {
-  const navigate = useNavigate();
+  const token = localStorage.getItem("chattoken");
   const username = localStorage.getItem("username");
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // handle signout
   const handleSignout = async () => {
@@ -21,6 +28,20 @@ const ChatContainer = () => {
   // search user
   const [searchKey, setSearchKey] = useState("");
   const [allSearchedUsers, setAllSearchedUsers] = useState([]);
+
+  // fetch active chats
+  const getAllActiveChats = async () => {
+    try {
+      const resp = await GetAllChats(token);
+      // console.log("active chats", resp?.data);
+      dispatch(SetAllChats(resp?.data));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  useEffect(() => {
+    getAllActiveChats();
+  }, []);
 
   return (
     <div className="h-screen w-screen bg-cover bg-[#B2EBF2]">
@@ -48,7 +69,7 @@ const ChatContainer = () => {
             allSearchedUsers={allSearchedUsers}
             setAllSearchedUsers={setAllSearchedUsers}
           />
-          <UserList searchKey={searchKey} allSearchedUsers={allSearchedUsers} />
+          <ChatList searchKey={searchKey} allSearchedUsers={allSearchedUsers} />
         </div>
 
         {/* part 2: chat area */}
