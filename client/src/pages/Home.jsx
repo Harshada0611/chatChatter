@@ -1,7 +1,7 @@
 import { useState } from "react";
 // components
-import Register from "../components/Register";
-import Login from "../components/Login";
+import Register from "./home-components/Register";
+import Login from "./home-components/Login";
 
 const Home = () => {
   const [login, setLogin] = useState(true);

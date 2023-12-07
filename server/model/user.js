@@ -7,9 +7,6 @@ const user_schema = new mongoose.Schema(
     password: { type: String, required: true },
     profilePic: {
       type: String,
-      required: true,
-      default:
-        "https://www.pngall.com/wp-content/uploads/5/Profile-Male-PNG.png",
     },
   },
   {

@@ -1,12 +1,21 @@
 import { useState } from "react";
-import { registerUser } from "../api-calls/user";
+import { useDispatch, useSelector } from "react-redux";
+// loader actions
+import { showLoader, hideLoader } from "../../redux/slices/loaderSlice";
+// api function
+import { registerUser } from "../../api-calls/user";
 // icons
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { FaUser } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 import { toast } from "react-hot-toast";
+// loader
+import Loader from "../../components/Loader";
 
 const Register = ({ setLogin }) => {
+  const dispatch = useDispatch();
+  const loader = useSelector((store) => store.loaderReducer);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -32,15 +41,16 @@ const Register = ({ setLogin }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      toast.loading("Creating User");
+      dispatch(showLoader());
       const resp = await registerUser(formData);
-      toast.dismiss();
+      dispatch(hideLoader());
       if (resp.success) {
         setLogin(true);
         return toast.success(resp.msg);
       }
       toast.error(resp.msg);
     } catch (err) {
+      dispatch(hideLoader());
       console.log(err);
     }
   };
@@ -104,14 +114,19 @@ const Register = ({ setLogin }) => {
             className="focus:outline-none w-full px-2 py-2 rounded-l-md bg-transparent"
           />
         </section>
+
         <section>
-          <button
-            type="submit"
-            disabled={!formData.email || !formData.password}
-            className="bg-[#00ACC1] w-full py-1 rounded-lg font-bold italic cursor-pointer disabled:cursor-not-allowed "
-          >
-            Sign Up
-          </button>
+          {loader.loader ? (
+            <Loader />
+          ) : (
+            <button
+              type="submit"
+              disabled={!formData.email || !formData.password}
+              className="bg-[#00ACC1] w-full py-1 rounded-lg font-bold italic cursor-pointer disabled:cursor-not-allowed "
+            >
+              Sign Up
+            </button>
+          )}
         </section>
       </form>
     </div>

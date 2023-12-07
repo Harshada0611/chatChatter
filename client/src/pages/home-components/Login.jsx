@@ -1,13 +1,22 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginUser } from "../api-calls/user";
+import { useDispatch, useSelector } from "react-redux";
+// api functions
+import { loginUser } from "../../api-calls/user";
+// loader actions
+import { showLoader, hideLoader } from "../../redux/slices/loaderSlice";
 // icons
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 import { toast } from "react-hot-toast";
+// loader
+import Loader from "../../components/Loader";
 
 const Login = ({ setLogin }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const loader = useSelector((store) => store.loaderReducer);
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -32,15 +41,19 @@ const Login = ({ setLogin }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      toast.loading("Signing In");
+      dispatch(showLoader());
       const resp = await loginUser(formData);
-      toast.dismiss();
+      console.log(resp);
+      dispatch(hideLoader());
       if (resp.success) {
+        localStorage.setItem("chattoken", resp.token);
+        localStorage.setItem("username", resp.user.name);
         navigate("/chats");
         return toast.success(resp.msg);
       }
       toast.error(resp.msg);
     } catch (err) {
+      dispatch(hideLoader());
       console.log(err);
     }
   };
@@ -89,13 +102,17 @@ const Login = ({ setLogin }) => {
           />
         </section>
         <section>
-          <button
-            type="submit"
-            disabled={!formData.email || !formData.password}
-            className="bg-[#00ACC1] w-full py-1 rounded-lg font-bold italic cursor-pointer disabled:cursor-not-allowed"
-          >
-            Login
-          </button>
+          {loader.loader ? (
+            <Loader />
+          ) : (
+            <button
+              type="submit"
+              disabled={!formData.email || !formData.password}
+              className="bg-[#00ACC1] w-full py-1 rounded-lg font-bold italic cursor-pointer disabled:cursor-not-allowed"
+            >
+              Login
+            </button>
+          )}
         </section>
       </form>
     </div>

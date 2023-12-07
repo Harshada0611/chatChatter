@@ -63,3 +63,35 @@ exports.user_details = async (req, resp) => {
     resp.send(err);
   }
 };
+
+// fetch all users
+exports.all_users = async (req, resp) => {
+  try {
+    const allUsers = await User.find({ _id: { $ne: req.accountId } });
+    resp.send(allUsers);
+  } catch (err) {
+    resp.send(err);
+  }
+};
+
+// serach user
+exports.search_user = async (req, resp) => {
+  console.log(req.query);
+  const { search_user } = req.query;
+  if (!search_user) {
+    return resp.json({ success: false, msg: "No user" });
+  }
+  try {
+    const user = new RegExp(search_user, "i");
+    const findUsers = await User.find({
+      $or: [{ email: user }, { name: user }],
+      _id: { $ne: req.accountId },
+    });
+    if (findUsers.length) {
+      return resp.json({ success: true, findUsers });
+    }
+    return resp.json({ success: false, msg: "no search result", findUsers });
+  } catch (err) {
+    return resp.json({ success: false, msg: err.message });
+  }
+};
