@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 // api calls
-import { GetAllChats } from "../api-calls/chat";
+import { fetchUserDetails } from "../api-calls/user";
+import { get_all_chats, create_new_chat } from "../api-calls/chat";
 // icons and images
 import chaticon from "../assets/chat-icon.png";
 import { ImSwitch } from "react-icons/im";
@@ -11,13 +12,29 @@ import UserSearch from "./chat-components/UserSearch";
 import ChatList from "./chat-components/ChatList";
 import ChatBox from "./chat-components/ChatBox";
 // redux actions
-import { SetAllChats } from "../redux/slices/userSLice";
+import { SetUserDetails, SetAllChats } from "../redux/slices/userSLice";
 
 const ChatContainer = () => {
   const token = localStorage.getItem("chattoken");
   const username = localStorage.getItem("username");
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const { UserDetails, allChats } = useSelector((store) => store.userReducer);
+
+  // fetch login user details
+  const handleFetchUserDetails = async () => {
+    try {
+      const resp = await fetchUserDetails(token);
+      // console.log(resp);
+      dispatch(SetUserDetails(resp));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  useEffect(() => {
+    handleFetchUserDetails();
+  }, []);
 
   // handle signout
   const handleSignout = async () => {
@@ -32,8 +49,8 @@ const ChatContainer = () => {
   // fetch active chats
   const getAllActiveChats = async () => {
     try {
-      const resp = await GetAllChats(token);
-      // console.log("active chats", resp?.data);
+      const resp = await get_all_chats(token);
+      console.log("active chats", resp);
       dispatch(SetAllChats(resp?.data));
     } catch (err) {
       console.log(err);
@@ -42,6 +59,26 @@ const ChatContainer = () => {
   useEffect(() => {
     getAllActiveChats();
   }, []);
+
+  // create new chat
+  const [receipient, setReceipient] = useState([]);
+  const createNewChat = async () => {
+    try {
+      const resp = await create_new_chat(
+        [UserDetails._id, receipient._id],
+        token
+      );
+      dispatch(SetAllChats([...allChats, resp]));
+      getAllActiveChats();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  useEffect(() => {
+    if (receipient._id) {
+      createNewChat();
+    }
+  }, [receipient]);
 
   return (
     <div className="h-screen w-screen bg-cover bg-[#B2EBF2]">
@@ -68,6 +105,7 @@ const ChatContainer = () => {
             setSearchKey={setSearchKey}
             allSearchedUsers={allSearchedUsers}
             setAllSearchedUsers={setAllSearchedUsers}
+            setReceipient={setReceipient}
           />
           <ChatList searchKey={searchKey} allSearchedUsers={allSearchedUsers} />
         </div>

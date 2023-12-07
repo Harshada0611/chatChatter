@@ -43,7 +43,7 @@ const Login = ({ setLogin }) => {
     try {
       dispatch(showLoader());
       const resp = await loginUser(formData);
-      console.log(resp);
+      // console.log(resp);
       dispatch(hideLoader());
       if (resp.success) {
         localStorage.setItem("chattoken", resp.token);

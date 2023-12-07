@@ -1,13 +1,17 @@
 import { useSelector } from "react-redux";
 
 const UserList = () => {
-  const allChats = useSelector((store) => store.userReducer.allChats);
+  const { UserDetails, allChats } = useSelector((store) => store.userReducer);
 
   return (
-    <div className="space-y-2 my-2 py-1  ">
-      {allChats.length ? (
-        <div>
+    <div className="space-y-2 my-2 py-1 ">
+      {allChats?.length ? (
+        <div className="h-[33rem] overflow-y-auto space-y-2 ">
           {allChats.map((chat, i) => {
+            const receipient = chat?.members?.find(
+              (user) => user.name !== UserDetails.name
+            );
+            // console.log("r=>", receipient);
             return (
               <div
                 key={i}
@@ -15,10 +19,10 @@ const UserList = () => {
               >
                 <p className="h-full">
                   <h1 className="h-full uppercase text-lg  rounded-full w-10 text-center py-1.5 font-medium text-black bg-gray-100 ">
-                    J
+                    {receipient?.name[0]}
                   </h1>
                 </p>
-                <p className="text-sm">{console.log(chat)}</p>
+                <p className="text-sm">{receipient?.name}</p>
               </div>
             );
           })}

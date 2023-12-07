@@ -9,6 +9,7 @@ const UserSearch = ({
   setSearchKey,
   allSearchedUsers,
   setAllSearchedUsers,
+  setReceipient,
 }) => {
   const token = localStorage.getItem("chattoken");
 
@@ -50,6 +51,10 @@ const UserSearch = ({
             {allSearchedUsers.map((user) => {
               return (
                 <div
+                  onClick={() => {
+                    setReceipient(user);
+                    setSearchKey("");
+                  }}
                   key={user._id}
                   className="border-[1px] bg-white rounded-md  flex items-center gap-2 py-1 px-1 hover:bg-green-100 cursor-pointer"
                 >

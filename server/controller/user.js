@@ -76,7 +76,6 @@ exports.all_users = async (req, resp) => {
 
 // serach user
 exports.search_user = async (req, resp) => {
-  console.log(req.query);
   const { search_user } = req.query;
   if (!search_user) {
     return resp.json({ success: false, msg: "No user" });

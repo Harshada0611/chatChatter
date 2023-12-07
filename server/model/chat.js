@@ -6,13 +6,13 @@ const chatSchema = new mongoose.Schema(
       type: [
         {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "users",
+          ref: "user",
         },
       ],
     },
     lastMessage: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "messages",
+      ref: "message",
     },
     unreadMessages: {
       type: Number,
@@ -24,4 +24,4 @@ const chatSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("chats", chatSchema);
+module.exports = mongoose.model("chat", chatSchema);
