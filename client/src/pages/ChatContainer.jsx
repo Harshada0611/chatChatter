@@ -10,9 +10,9 @@ import { ImSwitch } from "react-icons/im";
 // components
 import UserSearch from "./chat-components/UserSearch";
 import ChatList from "./chat-components/ChatList";
-import ChatBox from "./chat-components/ChatBox";
+import ChatArea from "./chat-components/ChatArea";
 // redux actions
-import { SetUserDetails, SetAllChats } from "../redux/slices/userSLice";
+import { SetUserDetails, SetAllChats } from "../redux/slices/userSlice";
 
 const ChatContainer = () => {
   const token = localStorage.getItem("chattoken");
@@ -20,7 +20,9 @@ const ChatContainer = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { UserDetails, allChats } = useSelector((store) => store.userReducer);
+  const { UserDetails, allChats, selectedChat } = useSelector(
+    (store) => store.userReducer
+  );
 
   // fetch login user details
   const handleFetchUserDetails = async () => {
@@ -50,7 +52,7 @@ const ChatContainer = () => {
   const getAllActiveChats = async () => {
     try {
       const resp = await get_all_chats(token);
-      console.log("active chats", resp);
+      // console.log("active chats", resp);
       dispatch(SetAllChats(resp?.data));
     } catch (err) {
       console.log(err);
@@ -81,7 +83,7 @@ const ChatContainer = () => {
   }, [receipient]);
 
   return (
-    <div className="h-screen w-screen bg-cover bg-[#B2EBF2]">
+    <div className="h-screen w-screen bg-cover bg-gray-200">
       <header className="h-[10%] px-5 w-full flex justify-between items-center bg-[#80DEEA]">
         <div className="flex gap-2">
           <img src={chaticon} />
@@ -111,8 +113,16 @@ const ChatContainer = () => {
         </div>
 
         {/* part 2: chat area */}
-        <div className="w-[60%] rounded-md bg-gray-100">
-          <ChatBox />
+        <div className="shadow-lg w-[60%] rounded-md bg-white ">
+          {!selectedChat ? (
+            <div className="w-full h-full flex justify-center items-center">
+              <p className="text-lg text-gray-400">
+                Click on user to start conversation
+              </p>
+            </div>
+          ) : (
+            <ChatArea />
+          )}
         </div>
       </div>
     </div>

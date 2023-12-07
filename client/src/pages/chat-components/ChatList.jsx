@@ -1,7 +1,13 @@
-import { useSelector } from "react-redux";
+import { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+// redux action
+import { SetSelectedChat } from "../../redux/slices/userSlice";
 
-const UserList = () => {
-  const { UserDetails, allChats } = useSelector((store) => store.userReducer);
+const ChatList = () => {
+  const { UserDetails, allChats, selectedChat } = useSelector(
+    (store) => store.userReducer
+  );
+  const dispatch = useDispatch();
 
   return (
     <div className="space-y-2 my-2 py-1 ">
@@ -11,17 +17,32 @@ const UserList = () => {
             const receipient = chat?.members?.find(
               (user) => user.name !== UserDetails.name
             );
-            // console.log("r=>", receipient);
+            // console.log(receipient);
             return (
               <div
+                onClick={() => dispatch(SetSelectedChat(chat))}
                 key={i}
-                className="border-[1px] bg-white rounded-md  flex items-center gap-2 py-1 px-1 hover:bg-green-100 cursor-pointer"
+                className={`border-[1px] ${
+                  selectedChat?._id === chat?._id ? "bg-blue-200" : "bg-white"
+                } 
+                rounded-md  flex items-center gap-2 py-2 px-1 
+                ${
+                  selectedChat?._id === chat?._id ? "" : "hover:bg-green-100"
+                } cursor-pointer`}
               >
-                <p className="h-full">
-                  <h1 className="h-full uppercase text-lg  rounded-full w-10 text-center py-1.5 font-medium text-black bg-gray-100 ">
-                    {receipient?.name[0]}
-                  </h1>
-                </p>
+                {!receipient?.profilePic ? (
+                  <p className="h-full">
+                    <h1 className="h-full uppercase text-lg  rounded-full w-10 text-center py-1.5 font-medium text-black bg-gray-100 ">
+                      {receipient?.name[0]}
+                    </h1>
+                  </p>
+                ) : (
+                  <img
+                    src={receipient?.profilePic}
+                    className="h-10 w-10 rounded-full"
+                  />
+                )}
+
                 <p className="text-sm">{receipient?.name}</p>
               </div>
             );
@@ -36,4 +57,4 @@ const UserList = () => {
   );
 };
 
-export default UserList;
+export default ChatList;

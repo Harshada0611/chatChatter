@@ -27,7 +27,6 @@ exports.fetch_active_chats = async (req, res) => {
 
 // create new chat
 exports.create_new_chat = async (req, res) => {
-  console.log(req.body);
   try {
     const newChat = new Chat(req.body);
     const savedChat = await newChat.save();
