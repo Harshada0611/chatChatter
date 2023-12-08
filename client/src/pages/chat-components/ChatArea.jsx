@@ -23,7 +23,6 @@ const arr = [
 const ChatArea = () => {
   const dispatch = useDispatch();
   const loader = useSelector((store) => store.loaderReducer.loader);
-  console.log(loader);
   const token = localStorage.getItem("chattoken");
   const username = localStorage.getItem("username");
   const { UserDetails, selectedChat } = useSelector(
@@ -73,7 +72,7 @@ const ChatArea = () => {
       dispatch(showLoader());
       const resp = await fetch_messages(selectedChat?._id, token);
       dispatch(hideLoader());
-      console.log("chat messages", resp.messages);
+      // console.log("chat messages", resp.messages);
       setAllMessages(resp?.messages);
     } catch (err) {
       console.log(err);

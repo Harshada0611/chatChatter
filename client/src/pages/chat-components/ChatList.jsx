@@ -7,6 +7,7 @@ const ChatList = () => {
   const { UserDetails, allChats, selectedChat } = useSelector(
     (store) => store.userReducer
   );
+  console.log("selected chat", selectedChat);
   const dispatch = useDispatch();
 
   return (
@@ -30,20 +31,33 @@ const ChatList = () => {
                   selectedChat?._id === chat?._id ? "" : "hover:bg-green-100"
                 } cursor-pointer`}
               >
-                {!receipient?.profilePic ? (
-                  <p className="h-full">
-                    <h1 className="h-full uppercase text-lg  rounded-full w-10 text-center py-1.5 font-medium text-black bg-gray-100 ">
-                      {receipient?.name[0]}
-                    </h1>
-                  </p>
-                ) : (
-                  <img
-                    src={receipient?.profilePic}
-                    className="h-10 w-10 rounded-full"
-                  />
-                )}
-
-                <p className="text-sm">{receipient?.name}</p>
+                <div>
+                  {!receipient?.profilePic ? (
+                    <p className="h-full">
+                      <h1 className="h-full uppercase text-lg  rounded-full w-10 text-center py-1.5 font-medium text-black bg-gray-100 ">
+                        {receipient?.name[0]}
+                      </h1>
+                    </p>
+                  ) : (
+                    <img
+                      src={receipient?.profilePic}
+                      className="h-10 w-10 rounded-full"
+                    />
+                  )}
+                </div>
+                <div>
+                  <p className="text-sm font-bold">{receipient?.name}</p>
+                  {chat?.lastMessage ? (
+                    <p className="text-xs flex justify-between gap-1">
+                      <span>
+                        {chat?.lastMessage?.sender?.name === UserDetails?.name
+                          ? "You"
+                          : chat?.lastMessage?.sender?.name}
+                      </span>
+                      :<span>{chat?.lastMessage?.text}</span>
+                    </p>
+                  ) : null}
+                </div>
               </div>
             );
           })}

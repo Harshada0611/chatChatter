@@ -10,6 +10,7 @@ exports.fetch_active_chats = async (req, res) => {
     })
       .populate("members")
       .populate("lastMessage")
+      .populate({ path: "lastMessage", populate: { path: "sender" } })
       .sort({ updatedAt: -1 });
     res.send({
       success: true,
