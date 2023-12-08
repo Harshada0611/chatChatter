@@ -1,10 +1,13 @@
 import { useState, useEffect, useRef } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+// redux actions
+import { showLoader, hideLoader } from "../../redux/slices/loaderSlice";
 //icons
 import { FaRegSmile } from "react-icons/fa";
 import { IoSend } from "react-icons/io5";
 import { IoMdImages } from "react-icons/io";
 import { toast } from "react-hot-toast";
+import Loader from "../../components/Loader";
 // api fuctions
 import { send_new_message, fetch_messages } from "../../api-calls/message";
 
@@ -18,6 +21,9 @@ const arr = [
 ];
 
 const ChatArea = () => {
+  const dispatch = useDispatch();
+  const loader = useSelector((store) => store.loaderReducer.loader);
+  console.log(loader);
   const token = localStorage.getItem("chattoken");
   const username = localStorage.getItem("username");
   const { UserDetails, selectedChat } = useSelector(
@@ -46,13 +52,16 @@ const ChatArea = () => {
       text: newMessage,
     };
     try {
+      dispatch(showLoader());
       const resp = await send_new_message(message, token);
+      dispatch(showLoader());
       // console.log(resp);
       if (resp.success) {
         setAllMessages([...allMessages, resp]);
         setNewMessage("");
       }
     } catch (err) {
+      dispatch(showLoader());
       console.log(err);
     }
   };
@@ -61,7 +70,9 @@ const ChatArea = () => {
   const [allMessages, setAllMessages] = useState([]);
   const fetchChatMessages = async () => {
     try {
+      dispatch(showLoader());
       const resp = await fetch_messages(selectedChat?._id, token);
+      dispatch(hideLoader());
       console.log("chat messages", resp.messages);
       setAllMessages(resp?.messages);
     } catch (err) {
@@ -94,22 +105,48 @@ const ChatArea = () => {
         <ul
           className={`relative	list-style-type: none space-y-5 flex flex-col `}
         >
-          {allMessages?.length
-            ? allMessages.map((msg, i) => {
-                return (
-                  <li
-                    key={i}
-                    className={` w-[75%] border-[1px] text-xs md:text-sm py-1.5  px-2  ${
+          {loader ? (
+            <Loader />
+          ) : allMessages?.length ? (
+            allMessages.map((msg, i) => {
+              const createdAtDate = new Date(msg?.createdAt); // Convert to Date object
+              const dateObj = {
+                date: createdAtDate.getDate(),
+                month: createdAtDate.getMonth(),
+                year: createdAtDate.getFullYear(),
+                hour: createdAtDate.getHours(),
+                min: createdAtDate.getMinutes(),
+              };
+              return (
+                <li key={i}>
+                  <div
+                    className={` w-[75%] border-[1px]  text-mds md:text-md py-2.5  px-2  ${
                       msg?.sender?.name === username
-                        ? "md:ml-[12rem] ml-[6rem] bg-green-100 rounded-l-xl rounded-br-xl"
-                        : "bg-gray-100 rounded-r-xl rounded-bl-xl"
+                        ? "md:ml-[12rem] ml-[6rem] bg-green-400 rounded-l-2xl rounded-tr-2xl"
+                        : "bg-gray-100 rounded-r-2xl rounded-bl-2xl"
                     }`}
                   >
-                    {msg?.text}
-                  </li>
-                );
-              })
-            : null}
+                    <p className="">{msg?.text}</p>
+                  </div>
+                  <div
+                    className={` flex gap-2   ${
+                      msg?.sender?.name === username
+                        ? "md:ml-[12rem] ml-[6rem] justify-end"
+                        : ""
+                    }`}
+                  >
+                    <p className="text-xs ">
+                      {`${dateObj.date}-${dateObj?.month}-${dateObj?.year}`}
+                    </p>
+                    <p className=" text-xs ">
+                      {`${dateObj?.hour}:${dateObj?.min}`}
+                    </p>
+                  </div>
+                </li>
+              );
+            })
+          ) : null}
+          {}
         </ul>
       </div>
       {/* footer :input box to send message */}
