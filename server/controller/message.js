@@ -3,7 +3,6 @@ const Chat = require("../model/chat");
 
 // send new message
 exports.send_new_message = async (req, resp) => {
-  console.log(req.body);
   try {
     // store message
     const newMessage = new Message(req.body);
@@ -14,7 +13,7 @@ exports.send_new_message = async (req, resp) => {
       { _id: req.body.chat },
       {
         lastMessage: savedMessage._id,
-        uread: { $inc: 1 },
+        $inc: { unreadMessages: 1 },
       }
     );
     resp.json({ success: true, msg: "new message sent", savedMessage });

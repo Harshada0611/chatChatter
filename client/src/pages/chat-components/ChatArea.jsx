@@ -2,12 +2,13 @@ import { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 // redux actions
 import { showLoader, hideLoader } from "../../redux/slices/loaderSlice";
-//icons
+//icons & images
 import { FaRegSmile } from "react-icons/fa";
 import { IoSend } from "react-icons/io5";
 import { IoMdImages } from "react-icons/io";
 import { toast } from "react-hot-toast";
 import Loader from "../../components/Loader";
+import wallpaper from "../../assets/chat-wallpaper.jpg";
 // api fuctions
 import { send_new_message, fetch_messages } from "../../api-calls/message";
 
@@ -53,11 +54,11 @@ const ChatArea = () => {
     try {
       dispatch(showLoader());
       const resp = await send_new_message(message, token);
-      dispatch(showLoader());
-      // console.log(resp);
+      dispatch(hideLoader());
+      // console.log("", resp);
       if (resp.success) {
-        setAllMessages([...allMessages, resp]);
-        setNewMessage("");
+        setAllMessages([...allMessages, resp?.savedMessage]);
+        setNewMessage(" ");
       }
     } catch (err) {
       dispatch(showLoader());
@@ -100,52 +101,53 @@ const ChatArea = () => {
         </div>
       </header>
       {/* message box */}
-      <div className="h-[78%] w-full p-4  overflow-y-scroll" ref={messagesRef}>
+      <div
+        className="h-[78%] w-full p-4  overflow-y-scroll"
+        ref={messagesRef}
+        style={{ background: `url(${wallpaper})` }}
+      >
         <ul
           className={`relative	list-style-type: none space-y-5 flex flex-col `}
         >
-          {loader ? (
-            <Loader />
-          ) : allMessages?.length ? (
-            allMessages.map((msg, i) => {
-              const createdAtDate = new Date(msg?.createdAt); // Convert to Date object
-              const dateObj = {
-                date: createdAtDate.getDate(),
-                month: createdAtDate.getMonth(),
-                year: createdAtDate.getFullYear(),
-                hour: createdAtDate.getHours(),
-                min: createdAtDate.getMinutes(),
-              };
-              return (
-                <li key={i}>
-                  <div
-                    className={` w-[75%] border-[1px]  text-mds md:text-md py-2.5  px-2  ${
-                      msg?.sender?.name === username
-                        ? "md:ml-[12rem] ml-[6rem] bg-green-400 rounded-l-2xl rounded-tr-2xl"
-                        : "bg-gray-100 rounded-r-2xl rounded-bl-2xl"
-                    }`}
-                  >
-                    <p className="">{msg?.text}</p>
-                  </div>
-                  <div
-                    className={` flex gap-2   ${
-                      msg?.sender?.name === username
-                        ? "md:ml-[12rem] ml-[6rem] justify-end"
-                        : ""
-                    }`}
-                  >
-                    <p className="text-xs ">
-                      {`${dateObj.date}-${dateObj?.month}-${dateObj?.year}`}
-                    </p>
-                    <p className=" text-xs ">
-                      {`${dateObj?.hour}:${dateObj?.min}`}
-                    </p>
-                  </div>
-                </li>
-              );
-            })
-          ) : null}
-          {}
+          {allMessages?.length
+            ? allMessages.map((msg, i) => {
+                const createdAtDate = new Date(msg?.createdAt); // Convert to Date object
+                const dateObj = {
+                  date: createdAtDate.getDate(),
+                  month: createdAtDate.getMonth(),
+                  year: createdAtDate.getFullYear(),
+                  hour: createdAtDate.getHours(),
+                  min: createdAtDate.getMinutes(),
+                };
+                return (
+                  <li key={i}>
+                    <div
+                      className={` w-[75%] border-[1px]  text-mds md:text-md py-2.5  px-2  ${
+                        msg?.sender?.name === username
+                          ? "md:ml-[16rem] ml-[4rem] bg-green-400 rounded-l-2xl rounded-tr-2xl"
+                          : "bg-gray-300 rounded-r-2xl rounded-bl-2xl"
+                      }`}
+                    >
+                      <p className="break-words">{msg?.text}</p>
+                    </div>
+                    <div
+                      className={` flex gap-2   ${
+                        msg?.sender?.name === username
+                          ? "md:ml-[12rem] ml-[6rem] justify-end"
+                          : ""
+                      }`}
+                    >
+                      <p className="text-xs ">
+                        {`${dateObj.date}-${dateObj?.month}-${dateObj?.year}`}
+                      </p>
+                      <p className=" text-xs ">
+                        {`${dateObj?.hour}:${dateObj?.min}`}
+                      </p>
+                    </div>
+                  </li>
+                );
+              })
+            : null}
         </ul>
       </div>
       {/* footer :input box to send message */}
@@ -160,10 +162,14 @@ const ChatArea = () => {
             className="w-full  h-full px-6 focus:outline-none "
           />
           <FaRegSmile className="text-xl text-orange-700 cursor-pointer" />
-          <IoSend
-            className="text-xl cursor-pointer"
-            onClick={handleSendNewMessage}
-          />
+          {loader ? (
+            <Loader />
+          ) : (
+            <IoSend
+              className="text-xl cursor-pointer"
+              onClick={handleSendNewMessage}
+            />
+          )}
         </section>
         <section className="w-[10%]  h-full flex justify-center items-center">
           <IoMdImages className="text-2xl cursor-pointer hover:animate-pulse" />

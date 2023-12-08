@@ -63,13 +63,14 @@ const ChatContainer = () => {
   }, []);
 
   // create new chat
-  const [receipient, setReceipient] = useState([]);
+  const [receipient, setReceipient] = useState({});
   const createNewChat = async () => {
     try {
       const resp = await create_new_chat(
         [UserDetails._id, receipient._id],
         token
       );
+      setReceipient({});
       dispatch(SetAllChats([...allChats, resp]));
       getAllActiveChats();
     } catch (err) {
@@ -101,7 +102,7 @@ const ChatContainer = () => {
       {/*chat wrapper  */}
       <div className="h-[90%] flex p-3 gap-10 ">
         {/* part 1: user search and list */}
-        <div className="w-[35%] h-full">
+        <div className="w-[25%] h-full">
           <UserSearch
             searchKey={searchKey}
             setSearchKey={setSearchKey}
@@ -109,11 +110,14 @@ const ChatContainer = () => {
             setAllSearchedUsers={setAllSearchedUsers}
             setReceipient={setReceipient}
           />
-          <ChatList searchKey={searchKey} allSearchedUsers={allSearchedUsers} />
+          <ChatList
+            searchKey={searchKey}
+            allSearchedUsers={allSearchedUsers}
+            getAllActiveChats={getAllActiveChats}
+          />
         </div>
-
         {/* part 2: chat area */}
-        <div className="shadow-lg w-[60%] rounded-md bg-white ">
+        <div className="shadow-lg w-[70%] rounded-md bg-white ">
           {!selectedChat ? (
             <div className="w-full h-full flex justify-center items-center">
               <p className="text-lg text-gray-400">
@@ -121,7 +125,7 @@ const ChatContainer = () => {
               </p>
             </div>
           ) : (
-            <ChatArea />
+            <ChatArea getAllActiveChats={getAllActiveChats} />
           )}
         </div>
       </div>

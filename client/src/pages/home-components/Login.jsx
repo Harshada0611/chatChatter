@@ -81,7 +81,7 @@ const Login = ({ setLogin }) => {
             value={formData.email}
             onChange={handleChange}
             required
-            className="focus:outline-none  w-full px-2 py-2 rounded-l-md bg-transparent "
+            className="focus:outline-none   w-full px-2 py-2 rounded-l-md bg-transparent "
           />
         </section>
         <section className="px-1.5 w-full flex bg-white/70 rounded-md">
