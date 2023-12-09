@@ -15,6 +15,18 @@ const mongooseConnection = async () => {
 };
 mongooseConnection();
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`server connected at port:${port}`);
+});
+
+// socket
+const io = require("socket.io")(server, {
+  cors: { origin: "http://localhost:5173" },
+});
+
+// check connection from client side
+io.on("connection", (socket) => {
+  console.log(`connected with socketid:${socket.id}`);
+
+  // socket events
 });

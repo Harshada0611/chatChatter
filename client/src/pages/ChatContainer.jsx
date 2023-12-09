@@ -13,8 +13,11 @@ import ChatList from "./chat-components/ChatList";
 import ChatArea from "./chat-components/ChatArea";
 // redux actions
 import { SetUserDetails, SetAllChats } from "../redux/slices/userSlice";
+// socket
+import { io } from "socket.io-client";
 
 const ChatContainer = () => {
+  var socket = io(import.meta.env.VITE_BASE_URL);
   const token = localStorage.getItem("chattoken");
   const username = localStorage.getItem("username");
   const navigate = useNavigate();
@@ -82,6 +85,9 @@ const ChatContainer = () => {
       createNewChat();
     }
   }, [receipient]);
+
+  // socket
+  useEffect(() => {}, []);
 
   return (
     <div className="h-screen w-screen bg-cover bg-gray-200">
